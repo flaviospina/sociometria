@@ -77,7 +77,7 @@ pm = dynamic
 pm.max_children = 10                      ; dimensionar pela memória vista no diagnóstico
 pm.max_requests = 500
 php_admin_value[open_basedir] = /var/www/sociometria/:/tmp/
-php_admin_flag[expose_php] = off
+; expose_php = Off e display_errors = Off ficam no php.ini do FPM
 ```
 
 Server block (`/etc/nginx/sites-available/sociometria` em Debian/Ubuntu;

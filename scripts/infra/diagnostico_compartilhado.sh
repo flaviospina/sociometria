@@ -17,8 +17,12 @@ export LC_ALL=C
 
 sec() { printf '\n===== %s =====\n' "$1"; }
 has() { command -v "$1" >/dev/null 2>&1; }
+lim() { # executa com limite de tempo (segundos) para nunca travar o relatorio
+  local t="$1"; shift
+  if has timeout; then timeout "$t" "$@" || echo "(sem resposta em ${t}s ou erro: $1)"; else "$@"; fi
+}
 api() { # chamada somente leitura à UAPI do cPanel
-  if has uapi; then uapi --output=json "$@" 2>&1 | head -c 6000; echo; else echo "(uapi indisponivel)"; fi
+  if has uapi; then lim 30 uapi --output=json "$@" 2>&1 | head -c 6000; echo; else echo "(uapi indisponivel)"; fi
 }
 
 sec "1. Conta e ambiente"
@@ -40,8 +44,8 @@ echo "nucleos visiveis:     $(nproc 2>/dev/null)"
 has free && free -m 2>/dev/null | head -2
 
 sec "3. Espaco em disco e inodes da conta"
-has quota && quota -s 2>/dev/null | tail -4
-echo "uso do home: $(du -sh "$HOME" 2>/dev/null | cut -f1)"
+has quota && lim 15 quota -s 2>/dev/null | tail -4
+# (o tamanho total da conta vem do painel, abaixo; "du" no home inteiro pode levar minutos)
 api StatsBar get_stats display='diskusage|inodesusage|sqldatabases|subdomains|addondomains|bandwidthusage'
 
 sec "4. PHP na linha de comando"

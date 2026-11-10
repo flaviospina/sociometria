@@ -15,16 +15,36 @@ bash ~/diagnostico_compartilhado.sh > ~/diagnostico.txt 2>&1
 ```
 
 O script só consulta: não cria bancos, não instala nada e não altera
-configuração. Resultado: **pendente**.
+configuração. **Executado em 10/11/2026** pelo responsável; resultado abaixo.
 
-Restrições já conhecidas da hospedagem compartilhada, a confirmar pelo relatório:
+### Resultado
 
-| Restrição | Efeito no sistema |
-|---|---|
-| Sem root e sem `CREATE USER`/`CREATE DATABASE` por SQL | O provisionamento automático atual **não funciona**; bancos e contas precisam ser criados pela API do cPanel, com o prefixo da conta |
-| Sem processos persistentes (systemd/Supervisor) | Filas processadas por cron, não por worker contínuo |
-| Sem controle de firewall, SSH ou do servidor MySQL | Hardening do servidor (HARDENING_VPS.md) não se aplica; a máquina e o MySQL são divididos com outros clientes |
-| Limites de CPU, memória e processos por conta | Sem margem para picos de carga ou geração pesada de relatórios |
+| Item | Encontrado | Avaliação |
+|---|---|---|
+| Servidor | HostGator compartilhado, cPanel 11.134, Linux EL9, shell `jailshell` | Sem root |
+| PHP (linha de comando) | 8.3.36; também 8.4 e 8.5 selecionáveis por domínio | **Atende** (Laravel 13 exige ≥ 8.3) |
+| Extensões PHP | Todas as necessárias presentes, inclusive `sodium`, `intl`, `pcntl` | Atende |
+| Banco de dados | **MySQL 5.7.44** (Percona), local | Compatível em princípio; **a aplicação só foi testada em MariaDB 10.11**. Versão sem suporte do fabricante desde 2023 |
+| Bancos por conta | Ilimitados; prefixo obrigatório `itthri79_`; nome até 64, usuário até 32 caracteres | Atende: `itthri79_soc_t_<16 hex>` tem 31 caracteres |
+| API do cPanel (`uapi`) no terminal | Funciona | Permite criar banco e usuário por instituição sem SQL administrativo |
+| Composer | Ausente | Instalar `composer.phar` na pasta da conta |
+| Node/npm | Ausentes | Frontend terá de ser compilado fora do servidor |
+| Git, curl, gpg, cron | Presentes; saída para Packagist e GitHub liberada | Atende |
+| Limites da conta | 25 processos, 100 arquivos abertos, 512 MB por processo PHP | Apertado: filas por cron, um processo por vez |
+| Disco | 45 GB de 150 GB | Atende |
+| Processos persistentes | Sem Supervisor/systemd | Filas por cron |
+
+Pendente de confirmação no Portal do Cliente: backup do provedor, intervalo
+mínimo de cron e localização do datacenter.
+
+### Risco principal desta conta
+
+A conta hospeda dezenas de outros sites (WordPress, Joomla, Moodle e sistemas
+próprios) e **todos rodam com o mesmo usuário do sistema**. Uma falha em
+qualquer um deles dá leitura do `.env` da Sociometria — e portanto da
+`APP_KEY`, que decifra as senhas dos bancos das instituições e os dados dos
+alunos. O isolamento por banco protege uma instituição da outra **dentro** da
+aplicação, mas não protege a aplicação dos vizinhos da mesma conta.
 
 Consequência para o uso: adequado para **demonstração e homologação com dados
 fictícios**. Dados reais de estudantes devem aguardar a VPS.

@@ -1,4 +1,33 @@
-# Diagnóstico da VPS HostGator
+# Diagnóstico da hospedagem HostGator
+
+> **Atualização:** o servidor disponível hoje é **hospedagem compartilhada,
+> plano Turbo, com cPanel** — não uma VPS. A VPS será contratada depois da
+> assinatura com a primeira escola. Para a hospedagem compartilhada use
+> `scripts/infra/diagnostico_compartilhado.sh` (seção 0). As seções 1 a 5
+> valem para a futura VPS.
+
+## 0. Hospedagem compartilhada (situação atual)
+
+Execução, no Terminal do cPanel, como o usuário da conta (sem root):
+
+```bash
+bash ~/diagnostico_compartilhado.sh > ~/diagnostico.txt 2>&1
+```
+
+O script só consulta: não cria bancos, não instala nada e não altera
+configuração. Resultado: **pendente**.
+
+Restrições já conhecidas da hospedagem compartilhada, a confirmar pelo relatório:
+
+| Restrição | Efeito no sistema |
+|---|---|
+| Sem root e sem `CREATE USER`/`CREATE DATABASE` por SQL | O provisionamento automático atual **não funciona**; bancos e contas precisam ser criados pela API do cPanel, com o prefixo da conta |
+| Sem processos persistentes (systemd/Supervisor) | Filas processadas por cron, não por worker contínuo |
+| Sem controle de firewall, SSH ou do servidor MySQL | Hardening do servidor (HARDENING_VPS.md) não se aplica; a máquina e o MySQL são divididos com outros clientes |
+| Limites de CPU, memória e processos por conta | Sem margem para picos de carga ou geração pesada de relatórios |
+
+Consequência para o uso: adequado para **demonstração e homologação com dados
+fictícios**. Dados reais de estudantes devem aguardar a VPS.
 
 ## Estado
 

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: ci-root
+        ports: ['3306:3306']
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, intl, sodium
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Auditoria de dependências
+        run: composer audit
+      - name: Estilo de código
+        run: vendor/bin/pint --test
+      - name: Bancos e contas de teste
+        env:
+          MYSQL_PWD: ci-root
+        run: |
+          sed -e 's/"\$CLIENT" -uroot/mysql -h127.0.0.1 -uroot/' scripts/dev/setup_local_db.sh > /tmp/setup_db.sh
+          DB_USER_HOST='%' bash /tmp/setup_db.sh
+      - name: Testes (inclui isolamento multi-tenant em MariaDB real)
+        env:
+          TENANT_DB_USER_HOST: '%'
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan test

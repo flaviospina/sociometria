@@ -1,0 +1,3 @@
+# demo/.htaccess — protege .env, app/, sql/ e tools/ caso a pasta "demo" fique dentro de public_html.
+# Somente a subpasta public/ é liberada (pelo .htaccess dela).
+Require all denied

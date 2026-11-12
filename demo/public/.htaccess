@@ -1,5 +1,8 @@
 # demo/public/.htaccess
 Options -Indexes
+# Esta é a única pasta que pode ser acessada pela internet
+# (a pasta acima dela nega tudo no próprio .htaccess).
+Require all granted
 DirectoryIndex index.php
 
 <IfModule mod_headers.c>

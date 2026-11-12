@@ -1,20 +1,18 @@
 -- demo/sql/dados_demo.sql — DADOS FICTÍCIOS gerados por tools/gerar_dados_demo.php
 -- Importar DEPOIS do schema.sql. Apaga e recria todo o conteúdo de demonstração.
 SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS=0;
-TRUNCATE TABLE audit_log;
-TRUNCATE TABLE interventions;
-TRUNCATE TABLE choices;
-TRUNCATE TABLE participations;
-TRUNCATE TABLE applications;
-TRUNCATE TABLE criteria;
-TRUNCATE TABLE students;
-TRUNCATE TABLE user_classes;
-TRUNCATE TABLE classes;
-TRUNCATE TABLE schools;
-TRUNCATE TABLE users;
-SET FOREIGN_KEY_CHECKS=1;
-INSERT INTO users (id,name,email,password_hash,role) VALUES (1,'Coordenação Pedagógica','gestao@demo.sociometria','$2y$10$JcTx.l2U4.k8KptwnQ9NPeEejRE3z5CxQgZnph.cBoCyzD1ugQaiO','admin'),(2,'Prof.ª Helena Duarte','professora@demo.sociometria','$2y$10$JcTx.l2U4.k8KptwnQ9NPeEejRE3z5CxQgZnph.cBoCyzD1ugQaiO','teacher');
+DELETE FROM audit_log;
+DELETE FROM interventions;
+DELETE FROM choices;
+DELETE FROM participations;
+DELETE FROM applications;
+DELETE FROM criteria;
+DELETE FROM students;
+DELETE FROM user_classes;
+DELETE FROM classes;
+DELETE FROM schools;
+DELETE FROM users;
+INSERT INTO users (id,name,email,password_hash,role) VALUES (1,'Coordenação Pedagógica','gestao@demo.sociometria','$2y$10$KOx55hTouvtbK1yv.v1PrezculDMcVDn4HjPIfQIAqNlX/WPWxlX.','admin'),(2,'Prof.ª Helena Duarte','professora@demo.sociometria','$2y$10$KOx55hTouvtbK1yv.v1PrezculDMcVDn4HjPIfQIAqNlX/WPWxlX.','teacher');
 INSERT INTO schools (id,name,city) VALUES (1,'Escola Municipal Jardim das Acácias','Cidade Modelo');
 INSERT INTO schools (id,name,city) VALUES (2,'Colégio Horizonte Azul','Cidade Modelo');
 INSERT INTO classes (id,school_id,name,grade,school_year,teacher_name) VALUES (1,1,'5º Ano A','5º ano',2026,'Prof.ª Helena Duarte');

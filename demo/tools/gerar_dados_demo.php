@@ -36,9 +36,8 @@ function code(array &$used): string {
     $used[$c] = true; return $c;
 }
 
-$out = ["-- demo/sql/dados_demo.sql — DADOS FICTÍCIOS gerados por tools/gerar_dados_demo.php", "-- Importar DEPOIS do schema.sql. Apaga e recria todo o conteúdo de demonstração.", 'SET NAMES utf8mb4;', 'SET FOREIGN_KEY_CHECKS=0;'];
-foreach (['audit_log','interventions','choices','participations','applications','criteria','students','user_classes','classes','schools','users'] as $t) $out[] = "TRUNCATE TABLE $t;";
-$out[] = 'SET FOREIGN_KEY_CHECKS=1;';
+$out = ["-- demo/sql/dados_demo.sql — DADOS FICTÍCIOS gerados por tools/gerar_dados_demo.php", "-- Importar DEPOIS do schema.sql. Apaga e recria todo o conteúdo de demonstração.", 'SET NAMES utf8mb4;'];
+foreach (['audit_log','interventions','choices','participations','applications','criteria','students','user_classes','classes','schools','users'] as $t) $out[] = "DELETE FROM $t;";   // ordem: tabelas dependentes primeiro (TRUNCATE falha com chaves estrangeiras)
 
 // Senha de demonstração (pública): demo1234
 $hash = password_hash('demo1234', PASSWORD_BCRYPT, ['cost' => 10]);

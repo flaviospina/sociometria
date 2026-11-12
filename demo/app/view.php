@@ -22,7 +22,7 @@ function page_start(string $title, string $active = '', bool $print = false): vo
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title><?= e($title) ?> — <?= e(APP_NAME) ?></title>
-<link rel="stylesheet" href="assets/app.css?v=3">
+<style><?php readfile(dirname(__DIR__).'/public/assets/app.css'); /* embutido: não depende de o servidor entregar arquivos estáticos */ ?></style>
 </head>
 <body class="<?= $print ? 'report-mode' : '' ?>">
 <?php if ($u): ?>
@@ -56,7 +56,7 @@ function page_end(): void
     ?>
 </main>
 <div id="tip" role="tooltip" hidden></div>
-<script src="assets/app.js?v=3"></script>
+<script><?php readfile(dirname(__DIR__).'/public/assets/app.js'); ?></script>
 </body>
 </html>
 <?php
